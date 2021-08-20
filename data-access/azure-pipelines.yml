@@ -112,16 +112,19 @@ stages:
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: data-access'
             inputs:
-              azureSubscription: '$(azureSubscription)'
+              azureSubscription: 'ShareThrift'
               appType: functionAppLinux
               appName: $(functionAppName)
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
+              runtimeStack: 'NODE|14'
           - task: AzureFunctionApp@1
             displayName: 'Azure Functions App Deploy: data-access-west'
             inputs:
-              azureSubscription: '$(azureSubscription)'
+              azureSubscription: 'ShareThrift'
               appType: 'functionAppLinux'
               appName: 'data-access-west'
               package: '$(Pipeline.Workspace)/drop/$(Build.BuildId).zip'
               deploymentMethod: 'runFromPackage'
+              runtimeStack: 'NODE|14'
+'
