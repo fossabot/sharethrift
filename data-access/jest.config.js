@@ -1,11 +1,18 @@
 // jest.config.js
 
 module.exports = {
+    roots: ["<rootDir>/."],
     preset: 'ts-jest',
     testEnvironment: 'node',
     testMatch: ['**/**/*.test.ts'],
     coverageReporters: ['json', 'lcov'],
     coverageDirectory: 'coverage',
+    collectCoverageFrom: [
+        "**/*.{js,jsx,ts}",
+        "!**/node_modules/**",
+        "!**/vendor/**",
+        "!**/dist/**"
+      ]
 }
 
 process.env = Object.assign(process.env, {    
