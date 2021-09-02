@@ -12,6 +12,7 @@ const httpTrigger: AzureFunction = async function (
   var parts = auth.split(/:/); // split on colon
   var username = parts[0];
   var password = parts[1];
+  
 
   if (
     username !== process.env["BASIC_AUTH_USERNAME"] ||
