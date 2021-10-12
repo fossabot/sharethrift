@@ -8,7 +8,12 @@
       }
     },
     "logLevel": {
-      "default": "Information"
+      "default": "Error",
+      "Host.Results": "Error",
+      "Function": "Error",
+      "Function.graphql": "Error",
+      "Function.graphql.User": "Trace",
+      "Host.Aggegator":"Error"
     }
   },
   "extensionBundle": {

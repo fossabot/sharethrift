@@ -1,0 +1,10 @@
+type User implements MongoBase {
+  firstName: String
+  lastName: String
+  email: EmailAddress
+
+  id: ObjectID!
+  schemaVersion: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
