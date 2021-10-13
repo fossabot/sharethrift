@@ -1,4 +1,4 @@
-import { Listing as ListingDO, ListingProps, ListingEntityReference } from '../../../domain/contexts/listing';
+import { Listing as ListingDO, ListingEntityReference } from '../../../domain/contexts/listing';
 import {ListingDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
 import { MongoListingRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-listing-repository';
 import {Context} from '../../context';
@@ -9,8 +9,6 @@ import { UserModel } from '../../../infrastructure/data-sources/cosmos-db/models
 import { UserDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { CategoryModel } from '../../../infrastructure/data-sources/cosmos-db/models/category';
 import { CategoryDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/category-domain-adapter';
-import { Entity } from '../../../domain/shared/entity';
-import { UserProps } from '../../../domain/contexts/user';
 
 type PropType = ListingDomainAdapter;
 type DomainType = ListingDO<PropType>;

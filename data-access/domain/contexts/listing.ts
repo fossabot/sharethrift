@@ -20,7 +20,8 @@ export interface ListingProps {
   primaryCategory: CategoryProps;
   createdAt: Date;
   updatedAt: Date;
-  schemaVersion: string;
+  schemaVersion: string;  
+  usersCurrentPublishedListingQuantity: () => Promise<number>;
 }
 
 export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
@@ -61,9 +62,15 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
     this.props.photos.push(newPhoto);
     this.addDomainEvent(ListingPhotoAddedEvent,newPhoto);
   }
-  requestPublish(){
+
+  async requestPublish(){
+    var publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
+    if(publishedQuantity > 5){
+      throw new Error("Listing is not valid");
+    }
     this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
   }
+  
   requestAddOwner(owner:UserProps){
     this.props.owner = owner;
   }

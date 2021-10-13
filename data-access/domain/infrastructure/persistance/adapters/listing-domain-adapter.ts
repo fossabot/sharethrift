@@ -1,5 +1,5 @@
 import { ListingProps } from "../../../contexts/listing";
-import { Listing } from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
+import { Listing ,ListingModel} from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { User } from "../../../../infrastructure/data-sources/cosmos-db/models/user";
 import { LocationProps } from "../../../contexts/location";
 import { PhotoProps } from "../../../contexts/photo";
@@ -11,10 +11,16 @@ import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 import { PhotoDomainAdapter } from "./photo-domain-adapter";
 import { CategoryDomainAdapter } from "./category-domain-adapter";
 import { LocationDomainAdapter } from "./location-domain-adapter";
-import { Types,ObjectId } from "mongoose";
 
 export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implements ListingProps {
   constructor(props: Listing) { super(props); }
+  
+  public usersCurrentPublishedListingQuantity = async () => {
+    if(!this.owner || !this.owner.id){ 
+      return 0;
+    }
+    return ListingModel.countDocuments({"owner.id": this.owner.id}).exec();    
+  }
 
   get title(): string {return this.props.title;}
   set title(value: string) {this.props.title = value;}
@@ -33,13 +39,11 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   }
   set owner(value: UserProps) {
     if (value) {
-      this.props.owner =  Types.ObjectId(value.id) as Schema.Types.ObjectId ;
+      this.props.owner = new Schema.Types.ObjectId(value.id)  ;
     }
   }
   
-  
   get photos(): PhotoProps[] {
-    
     return this.props.photos.map((photo) => new PhotoDomainAdapter(photo));
   }
 
@@ -47,7 +51,7 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   get primaryCategory(): CategoryProps { return new CategoryDomainAdapter(this.props.primaryCategory); }
   set primaryCategory(value: CategoryProps) {
     if (value) {
-      this.props.primaryCategory =Types.ObjectId(value.id) as Schema.Types.ObjectId ;
+      this.props.primaryCategory = new Schema.Types.ObjectId(value.id) as Schema.Types.ObjectId ;
     }
   }
 }
