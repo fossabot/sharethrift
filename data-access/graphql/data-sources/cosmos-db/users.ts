@@ -16,31 +16,5 @@ export default class Users extends MongoDataSource<User.User, Context> {
       .exec())
       .map((user: User.User) => new UserDomainAdapter(user));
   }
-/*
-  async createUser(firstName: string, lastName: string, email:string): Promise<User.User> {
-    return this.model.create({
-      firstName: firstName,
-      lastName: lastName,
-      email: email,
-    });
-  }
-
-  async updateUser(userId:string, firstName: string, lastName: string, email:string): Promise<User.User> {
-    this.deleteFromCacheById(userId)
-    return this.model
-      .updateOne({
-        _id: userId
-      }, {
-        $set: { 
-          firstName: firstName,
-          lastName: lastName,
-          email: email
-        }
-      })
-      .exec()
-      .then(
-        () => this.findOneById(userId)
-      );
-  }
-  */
+  
 }

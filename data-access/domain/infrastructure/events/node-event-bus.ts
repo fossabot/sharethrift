@@ -44,10 +44,6 @@ class NodeEventBusImpl implements EventBus {
     }
     return NodeEventBusImpl.instance;
   }
-
-
-
-
 }
 
 export const NodeEventBus = NodeEventBusImpl.getInstance();
