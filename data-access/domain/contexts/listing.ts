@@ -61,11 +61,14 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   }
 
   async requestPublish(){
+    /*
     var publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
+    */
     this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
+    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
   }
   
   requestAddOwner(owner:UserProps){

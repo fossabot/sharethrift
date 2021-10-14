@@ -1,9 +1,5 @@
 {
 	"folders": [
-                {
-			"name": "ROOT"
-                        "path": "./"
-                },
 		{
 			"path": "ui"
 		},

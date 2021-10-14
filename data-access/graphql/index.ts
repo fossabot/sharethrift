@@ -9,7 +9,7 @@ function enableConsoleLogging (context: Context) {
       console.warn = context.log.warn;
       console.info = context.log.info;
 
-
+    //  console.log('Logging enabled');
     //const originalLogger = console.log;
     //console.log = function () {
     //  context.log.info(...arguments);

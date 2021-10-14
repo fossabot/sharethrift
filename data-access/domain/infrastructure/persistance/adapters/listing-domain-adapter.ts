@@ -5,7 +5,7 @@ import { LocationProps } from "../../../contexts/location";
 import { PhotoProps } from "../../../contexts/photo";
 import { UserProps } from "../../../contexts/user";
 import { CategoryProps } from "../../../contexts/category";
-import { isValidObjectId, Schema } from "mongoose";
+import mongoose from "mongoose";
 import { UserDomainAdapter } from "./user-domain-adapter";
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 import { PhotoDomainAdapter } from "./photo-domain-adapter";
@@ -32,14 +32,15 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   set version(value: number) {this.props.version = value;}
 
   get owner(): UserProps {
-    if (!this.props.owner || !isValidObjectId(this.props.owner.toString())) {
+    if (!this.props.owner || !mongoose.isValidObjectId(this.props.owner.toString())) {
       return undefined;
     }
     return new UserDomainAdapter(this.props.owner as User);
   }
   set owner(value: UserProps) {
     if (value) {
-      this.props.owner = new Schema.Types.ObjectId(value.id)  ;
+      // @ts-ignore: TS2348
+      this.props.owner = mongoose.Types.ObjectId(value.id);
     }
   }
   
@@ -51,7 +52,8 @@ export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implem
   get primaryCategory(): CategoryProps { return new CategoryDomainAdapter(this.props.primaryCategory); }
   set primaryCategory(value: CategoryProps) {
     if (value) {
-      this.props.primaryCategory = new Schema.Types.ObjectId(value.id) as Schema.Types.ObjectId ;
+      // @ts-ignore: TS2348
+      this.props.primaryCategory = mongoose.Types.ObjectId(value.id);
     }
   }
 }
