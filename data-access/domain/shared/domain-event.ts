@@ -17,16 +17,13 @@ export interface DomainEvent {
 }
 
 export abstract class DomainEventBase implements DomainEvent {
-    constructor(private readonly _eventId:string, private readonly _aggregateId: string ) {}
-    get aggregateId():string {
-      return this._aggregateId;
-    }
-    get eventId():string {
-      return this._eventId;
-    }
-    
-    
- 
+  constructor(private readonly _eventId:string, private readonly _aggregateId: string ) {}
+  get aggregateId():string {
+    return this._aggregateId;
+  }
+  get eventId():string {
+    return this._eventId;
+  }
 }
 
 export abstract class CustomDomainEventImpl<T> extends DomainEventBase implements CustomDomainEvent<T> {

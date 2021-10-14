@@ -15,11 +15,12 @@ import Categories from './categories';
 import Users from './users';
 
 import { NodeEventBus } from '../../../domain/infrastructure/events/node-event-bus';
+import { InProcEventBus } from '../../../domain/infrastructure/events/in-proc-event-bus';
 
 export const Domain  = {
-  listingDomainAPI: new Listings(new MongoUnitOfWork(NodeEventBus,ListingModel, new ListingConverter(), MongoListingRepository)),
-  categoryDomainAPI: new Categories(new MongoUnitOfWork(NodeEventBus,CategoryModel, new CategoryConverter(), MongoCategoryRepository)),
-  userDomainAPI: new Users(new MongoUnitOfWork(NodeEventBus, UserModel, new UserConverter(), MongoUserRepository))
+  listingDomainAPI: new Listings(new MongoUnitOfWork(InProcEventBus,NodeEventBus,ListingModel, new ListingConverter(), MongoListingRepository)),
+  categoryDomainAPI: new Categories(new MongoUnitOfWork(InProcEventBus,NodeEventBus,CategoryModel, new CategoryConverter(), MongoCategoryRepository)),
+  userDomainAPI: new Users(new MongoUnitOfWork(InProcEventBus,NodeEventBus, UserModel, new UserConverter(), MongoUserRepository))
 }
 
 export type DomainType = typeof Domain;

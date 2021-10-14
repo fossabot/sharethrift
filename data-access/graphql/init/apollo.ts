@@ -1,4 +1,4 @@
-import { ApolloServer, gql } from 'apollo-server-azure-functions';
+import { ApolloServer, CreateHandlerOptions, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { CosmosDB } from '../data-sources/cosmos-db';
 import connect from '../../infrastructure/data-sources/cosmos-db/connect';
@@ -58,6 +58,8 @@ const serverConfig = () => {
           connect();
           portalTokenExtractor.Start();
           EventHandlers.RegisterListingPublishedEmailHandler();
+          EventHandlers.RegisterListingPublishedDomainEventHandler();
+          EventHandlers.RegisterListingPublishedSendFaxHandler();
         },
       },
       responseCachePlugin()
@@ -75,8 +77,7 @@ const graphqlHandler = (context: Context, req: HttpRequest) => {
       origin: true,
       credentials: true,
     },
-  })
-  
+  } as CreateHandlerOptions)
   req.headers["x-ms-privatelink-id"] = "" // https://github.com/Azure/azure-functions-host/issues/6013
   req.headers['server'] = null;
   return graphqlHandlerObj(context, req)

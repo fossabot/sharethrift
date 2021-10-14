@@ -1,14 +1,11 @@
 import { AggregateRoot } from "../shared/aggregate-root";
-import { DomainEvent } from "../shared/domain-event";
 import { Category, CategoryEntityReference, CategoryProps } from "./category";
 import { Passport } from "./identity-and-access";
 import { Location, LocationEntityReference, LocationProps } from "./location";
 import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
 import { User, UserProps, UserEntityReference } from "./user";
 import  { ListingPhotoAddedEvent } from "../events/listing-photo-added";
-import {ListingPublishedEvent, ListingPublishedProps} from "../events/listing-published";
-import { EntityProps } from "../shared/entity";
-import { CategoryDomainAdapter } from "../infrastructure/persistance/adapters/category-domain-adapter";
+import {ListingPublishedEvent} from "../events/listing-published";
 
 export interface ListingProps {
   id: string;
@@ -64,11 +61,14 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   }
 
   async requestPublish(){
+    /*
     var publishedQuantity = await this.props.usersCurrentPublishedListingQuantity();
     if(publishedQuantity > 5){
       throw new Error("Listing is not valid");
     }
+    */
     this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
+    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
   }
   
   requestAddOwner(owner:UserProps){

@@ -4,9 +4,10 @@ import { Model, ClientSession,Document } from "mongoose";
 import { TypeConverter } from "../../shared/type-converter";
 import { EntityProps } from "../../shared/entity";
 import { EventBus } from "../../shared/event-bus";
+import { DomainEvent } from "../../shared/domain-event";
 
-export abstract class MongoRepository<MongoType,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
-  
+export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps,DomainType extends AggregateRoot<PropType>> implements Repository<DomainType> {
+  protected itemsInTransaction:DomainType[] = [];
   constructor(
     protected eventBus: EventBus,
     protected model : Model<MongoType>, 
@@ -18,11 +19,26 @@ export abstract class MongoRepository<MongoType,PropType extends EntityProps,Dom
   }
 
   async save(item: DomainType): Promise<DomainType> {
-   item.getDomainEvents().forEach(event => this.eventBus.dispatch(event,event['payload']));
-   return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
+   
+    console.log("saving item");
+    for await (let event of item.getDomainEvents()) {
+      console.log(`Repo dispatching DomainEvent : ${JSON.stringify(event)}`);
+      await this.eventBus.dispatch(event as any,event['payload'])
+    }
+    item.clearDomainEvents();
+    this.itemsInTransaction.push(item);
+    return this.typeConverter.toDomain(await this.typeConverter.toMongo(item).save({session:this.session}));
   }
 
-  static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>>(
+  async getIntegrationEvents(): Promise<DomainEvent[]> {
+    var integrationEventsGroup = this.itemsInTransaction.map(item => {
+      var integrationEvents = item.getIntegrationEvents();
+      item.clearIntegrationEvents(); 
+      return integrationEvents});
+    return integrationEventsGroup.reduce((acc,curr) => acc.concat(curr),[]);
+  }
+
+  static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
     typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
@@ -33,7 +49,7 @@ export abstract class MongoRepository<MongoType,PropType extends EntityProps,Dom
 }
 
 export class MongoFactory{
-  static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepository<MongoType,PropType,DomainType>>(
+  static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
     typeConverter:TypeConverter<Document<MongoType>,DomainType>, 

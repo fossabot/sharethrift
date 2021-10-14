@@ -1,7 +1,6 @@
 import { MongoDataSource } from 'apollo-datasource-mongodb';
 import * as Listing from '../../../infrastructure/data-sources/cosmos-db/models/listing';
 import {Context} from '../../context';
-import {ListingDetail} from '../../generated';
 import { ListingDomainAdapter } from '../../../domain/infrastructure/persistance/adapters/listing-domain-adapter';
 import { ListingEntityReference } from '../../../domain/contexts/listing';
 
@@ -22,12 +21,5 @@ export default class Listings extends MongoDataSource<Listing.Listing, Context> 
     console.log(JSON.stringify(result));
     return result;
   }
-/*
-  createListing(listingDetail:ListingDetail): Promise<Listing.Listing> {
-    var listing = new this.model(
-      {...listingDetail}
-    );
-    return listing.save();
-  }
-  */
+  
 }

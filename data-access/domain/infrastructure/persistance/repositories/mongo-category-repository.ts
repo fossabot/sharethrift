@@ -1,11 +1,11 @@
 import { Category as CategoryDO, CategoryProps } from "../../../contexts/category";
 import { CategoryRepository } from "../../../contexts/category-repository";
 import { Category, CategoryModel }from "../../../../infrastructure/data-sources/cosmos-db/models/category";
-import { MongoRepository } from "../mongo-repository";
+import { MongoRepositoryBase } from "../mongo-repository";
 import { TypeConverter } from "../../../shared/type-converter";
 import { ClientSession } from "mongoose";
 import { EventBus } from "../../../shared/event-bus";
-export class MongoCategoryRepository<PropType extends CategoryProps> extends MongoRepository<Category,PropType,CategoryDO<PropType>> implements CategoryRepository<PropType> {
+export class MongoCategoryRepository<PropType extends CategoryProps> extends MongoRepositoryBase<Category,PropType,CategoryDO<PropType>> implements CategoryRepository<PropType> {
   constructor(
     eventBus: EventBus,
     modelType: typeof CategoryModel, 
