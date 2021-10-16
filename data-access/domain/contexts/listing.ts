@@ -6,6 +6,7 @@ import { Photo, PhotoProps, PhotoEntityReference } from "./photo";
 import { User, UserProps, UserEntityReference } from "./user";
 import  { ListingPhotoAddedEvent } from "../events/listing-photo-added";
 import {ListingPublishedEvent} from "../events/listing-published";
+import { ListingCreatedEvent } from "../events/listing-created";
 
 export interface ListingProps {
   id: string;
@@ -21,7 +22,8 @@ export interface ListingProps {
   usersCurrentPublishedListingQuantity: () => Promise<number>;
 }
 
-export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference {
+
+export class Listing<props extends ListingProps> extends AggregateRoot<props> implements ListingEntityReference, ListingDomainObject {
 
   constructor(props: props) {super(props);}
 
@@ -40,6 +42,10 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
   // This would allow us to validate the listing before publishing it, using external services.. e.g. check if the user has too many listings alraedy, (e.g. business rule of user can have at max 15 listings)
 
   requestUpdateDescription(description: string){
+    //descrition can be max 2000character
+    if(description.length>2000){
+      throw new Error("Description is too long");
+    }
     this.props.description=description;
   }
 
@@ -67,8 +73,9 @@ export class Listing<props extends ListingProps> extends AggregateRoot<props> im
       throw new Error("Listing is not valid");
     }
     */
-    this.addDomainEvent(ListingPublishedEvent,{listingId: this.props.id});
-    this.addIntegrationEvent(ListingPublishedEvent,{listingId: this.props.id});
+   
+    this.addDomainEvent(ListingPublishedEvent,{listing: this.props});
+    this.addIntegrationEvent(ListingCreatedEvent,{listingId: this.props.id});
   }
   
   requestAddOwner(owner:UserProps){
@@ -99,4 +106,13 @@ export interface ListingEntityReference {
   readonly createdAt: Date;
   readonly updatedAt: Date;
   readonly schemaVersion: string;
+}
+
+export interface ListingDomainObject extends ListingEntityReference {
+  requestUpdateDescription(description: string): void;
+  requestAddPhoto(documentId:string, user:Passport): void;
+  requestPublish(): void;
+  requestAddOwner(owner:UserProps): void;
+  requestAddCategory(category: CategoryProps): void;
+  requestRemovePhoto(id: string, user: Passport): void;
 }

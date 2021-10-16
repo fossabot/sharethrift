@@ -1,7 +1,8 @@
+import { ListingProps, ListingDomainObject } from '../contexts/listing';
 import { DomainEventStaticProps, staticImplements,CustomDomainEventImpl } from '../shared/domain-event';
 
 export interface ListingPublishedProps {
-  listingId: string;
+  listing: ListingProps;
 }
 
 @staticImplements<DomainEventStaticProps>()

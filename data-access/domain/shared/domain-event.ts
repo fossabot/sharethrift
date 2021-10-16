@@ -1,6 +1,7 @@
 export interface DomainEventStaticProps {
   readonly eventId: string;
 }
+
 export interface CustomDomainEvent<T> extends DomainEvent {
   get payload(): T;
   set payload(payload: T);
