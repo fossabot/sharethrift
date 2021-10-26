@@ -12,7 +12,6 @@ class InProcEventBusImpl implements EventBus {
       for await(const subscriber of this.eventSubscribers[event.constructor.name]) {
         await subscriber(JSON.stringify(data));
       }
-     // return this.eventSubscribers[event.constructor.name].forEach(async callback => callback(JSON.stringify(data)));
     }
   }
 
