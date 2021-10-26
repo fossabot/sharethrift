@@ -9,7 +9,8 @@ import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
 import { Domain } from '../data-sources/domain';
-import * as EventHandlers from '../../domain/infrastructure/event-handlers/index'
+import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
+
 
 
 
@@ -26,11 +27,11 @@ const serverConfig = () => {
       ...CosmosDB,
       ...Domain
     }),
-    context: (req:any) => {
+    context: async (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
      
       if(bearerToken){
-        var verifiedUser = portalTokenExtractor.GetVerifiedUser(bearerToken);
+        var verifiedUser = await portalTokenExtractor.GetVerifiedUser(bearerToken);
         if(verifiedUser){
           return {
             VerifedUser:verifiedUser
@@ -55,11 +56,10 @@ const serverConfig = () => {
       {
         async serverWillStart(service: GraphQLServiceContext) {
           console.log('Apollo Server Starting');
-          connect();
+          await connect();
           portalTokenExtractor.Start();
-          EventHandlers.RegisterListingPublishedEmailHandler();
-          EventHandlers.RegisterListingPublishedDomainEventHandler();
-          EventHandlers.RegisterListingPublishedSendFaxHandler();
+      
+          RegisterHandlers();
         },
       },
       responseCachePlugin()

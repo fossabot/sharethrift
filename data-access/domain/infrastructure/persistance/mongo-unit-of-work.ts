@@ -7,19 +7,25 @@ import { EntityProps } from "../../shared/entity";
 import { EventBus } from "../../shared/event-bus";
 import { DomainEvent } from "../../shared/domain-event";
 
-export class MongoUnitOfWork<MongoType,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>  > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
+export class MongoUnitOfWork<MongoType,PropType extends EntityProps, DomainType  extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType> > extends PersistanceUnitOfWork<PropType,DomainType,RepoType> {
   async withTransaction(func: (repository: RepoType) => Promise<void>): Promise<void> {
-    var repoEvents: DomainEvent[] = [];
-    await mongoose.connection.transaction(async (session:ClientSession) => {
-      var repo = MongoRepositoryBase.create(this.bus, this.model, this.typeConverter, session, this.repoClass);
-      await func(repo);
-      repoEvents = await repo.getIntegrationEvents();
-    });
-    //Send integration events after transaction is completed
-    for await(let event of repoEvents){
-      await this.integrationEventBus.dispatch(event as any,event['payload'])
-    }
+      var repoEvents: DomainEvent[] = [];
+      console.log('withTransaction');
+      await mongoose.connection.transaction(async (session:ClientSession) => {
+        console.log('transaction');
+        var repo = MongoRepositoryBase.create(this.bus, this.model, this.typeConverter, session, this.repoClass);
+        console.log('repo created');
+        await func(repo);
+        console.log('func done');
+        repoEvents = await repo.getIntegrationEvents();
+      });
+      console.log('integration events');
+      //Send integration events after transaction is completed
+      for await(let event of repoEvents){
+        await this.integrationEventBus.dispatch(event as any,event['payload'])
+      }  
   }
+  
   constructor(
       private bus : EventBus,
       private integrationEventBus: EventBus,

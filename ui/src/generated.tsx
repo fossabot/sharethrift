@@ -70,6 +70,22 @@ export type Scalars = {
   Void: any;
 };
 
+export type Account = MongoBase & {
+  __typename?: "Account";
+  name?: Maybe<Scalars["String"]>;
+  roles?: Maybe<Array<Maybe<Role>>>;
+  contacts?: Maybe<Array<Maybe<Contact>>>;
+  id: Scalars["ObjectID"];
+  schemaVersion?: Maybe<Scalars["String"]>;
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
+export type AccountPermissions = {
+  __typename?: "AccountPermissions";
+  canManageRolesAndPermissions: Scalars["Boolean"];
+};
+
 export type Address = {
   __typename?: "Address";
   streetNumber?: Maybe<Scalars["String"]>;
@@ -109,23 +125,26 @@ export type CategoryDetail = {
   name?: Maybe<Scalars["String"]>;
 };
 
+export type Contact = {
+  __typename?: "Contact";
+  firstName: Scalars["String"];
+  lastName?: Maybe<Scalars["String"]>;
+  role?: Maybe<Role>;
+  user?: Maybe<User>;
+  id: Scalars["ObjectID"];
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
+};
+
 export type CreateListingPayload = {
   __typename?: "CreateListingPayload";
   listing?: Maybe<Listing>;
 };
 
-/**  New user values  */
-export type CreateUserInput = {
-  firstName?: Maybe<Scalars["String"]>;
-  lastName?: Maybe<Scalars["String"]>;
-  /** Must be a valid email address */
-  email?: Maybe<Scalars["EmailAddress"]>;
-};
-
 /**  https://www.apollographql.com/blog/graphql/basics/designing-graphql-mutations/  */
 export type Listing = MongoBase & {
   __typename?: "Listing";
-  owner?: Maybe<User>;
+  account?: Maybe<Account>;
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Category>;
@@ -143,6 +162,11 @@ export type ListingDetail = {
   title?: Maybe<Scalars["String"]>;
   description?: Maybe<Scalars["String"]>;
   primaryCategory?: Maybe<Scalars["ObjectID"]>;
+};
+
+export type ListingPermissions = {
+  __typename?: "ListingPermissions";
+  canManageListings: Scalars["Boolean"];
 };
 
 export type Location = MongoBase & {
@@ -188,13 +212,14 @@ export type MutationCreateListingArgs = {
 };
 
 /**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
-export type MutationCreateUserArgs = {
-  input: CreateUserInput;
-};
-
-/**  Base Mutation Type definition - all mutations will be defined in separate files extending this type  */
 export type MutationUpdateUserArgs = {
   input: UserUpdateInput;
+};
+
+export type Permissions = {
+  __typename?: "Permissions";
+  listingPermissions: ListingPermissions;
+  accountPermissions: AccountPermissions;
 };
 
 export type Photo = {
@@ -240,6 +265,16 @@ export type QueryListingArgs = {
 /**  Base Query Type definition - , all mutations will be defined in separate files extending this type  */
 export type QueryUserArgs = {
   id: Scalars["ID"];
+};
+
+export type Role = {
+  __typename?: "Role";
+  roleName: Scalars["String"];
+  isDefault: Scalars["Boolean"];
+  permissions: Permissions;
+  id: Scalars["ObjectID"];
+  updatedAt?: Maybe<Scalars["DateTime"]>;
+  createdAt?: Maybe<Scalars["DateTime"]>;
 };
 
 export type User = MongoBase & {
@@ -321,11 +356,10 @@ export type ListingsListingsQuery = {
         id: any;
         title?: Maybe<string>;
         description?: Maybe<string>;
-        owner?: Maybe<{
-          __typename?: "User";
+        account?: Maybe<{
+          __typename?: "Account";
           id: any;
-          firstName?: Maybe<string>;
-          lastName?: Maybe<string>;
+          name?: Maybe<string>;
         }>;
         primaryCategory?: Maybe<{
           __typename?: "Category";
@@ -357,12 +391,7 @@ export type ListingsFieldsFragment = {
   id: any;
   title?: Maybe<string>;
   description?: Maybe<string>;
-  owner?: Maybe<{
-    __typename?: "User";
-    id: any;
-    firstName?: Maybe<string>;
-    lastName?: Maybe<string>;
-  }>;
+  account?: Maybe<{ __typename?: "Account"; id: any; name?: Maybe<string> }>;
   primaryCategory?: Maybe<{ __typename?: "Category"; name?: Maybe<string> }>;
   photos?: Maybe<
     Array<
@@ -379,6 +408,18 @@ export type ListingsFieldsFragment = {
       __typename?: "Address";
       freeformAddress?: Maybe<string>;
     }>;
+  }>;
+};
+
+export type UserCreateMutationVariables = Exact<{ [key: string]: never }>;
+
+export type UserCreateMutation = {
+  __typename?: "Mutation";
+  createUser?: Maybe<{
+    __typename?: "User";
+    id: any;
+    firstName?: Maybe<string>;
+    lastName?: Maybe<string>;
   }>;
 };
 
@@ -515,13 +556,12 @@ export const ListingsFieldsFragmentDoc = {
           { kind: "Field", name: { kind: "Name", value: "id" } },
           {
             kind: "Field",
-            name: { kind: "Name", value: "owner" },
+            name: { kind: "Name", value: "account" },
             selectionSet: {
               kind: "SelectionSet",
               selections: [
                 { kind: "Field", name: { kind: "Name", value: "id" } },
-                { kind: "Field", name: { kind: "Name", value: "firstName" } },
-                { kind: "Field", name: { kind: "Name", value: "lastName" } },
+                { kind: "Field", name: { kind: "Name", value: "name" } },
               ],
             },
           },
@@ -862,6 +902,33 @@ export const ListingsListingsDocument = {
   ListingsListingsQuery,
   ListingsListingsQueryVariables
 >;
+export const UserCreateDocument = {
+  kind: "Document",
+  definitions: [
+    {
+      kind: "OperationDefinition",
+      operation: "mutation",
+      name: { kind: "Name", value: "UserCreate" },
+      selectionSet: {
+        kind: "SelectionSet",
+        selections: [
+          {
+            kind: "Field",
+            name: { kind: "Name", value: "createUser" },
+            selectionSet: {
+              kind: "SelectionSet",
+              selections: [
+                { kind: "Field", name: { kind: "Name", value: "id" } },
+                { kind: "Field", name: { kind: "Name", value: "firstName" } },
+                { kind: "Field", name: { kind: "Name", value: "lastName" } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserCreateMutation, UserCreateMutationVariables>;
 export const UserListGetUsersDocument = {
   kind: "Document",
   definitions: [
