@@ -10,7 +10,7 @@ export class MongoListingRepository<PropType extends ListingProps> extends Mongo
   constructor(
     eventBus: EventBus,
     modelType: typeof ListingModel, 
-    typeConverter: TypeConverter<Listing, ListingDO<PropType>>,
+    typeConverter: TypeConverter<Listing, ListingDO<PropType>, PropType>,
     session: ClientSession
   ) {
     super(eventBus, modelType,typeConverter,session);

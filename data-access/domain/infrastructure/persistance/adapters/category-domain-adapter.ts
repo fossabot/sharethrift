@@ -1,6 +1,14 @@
 import { Category } from "../../../../infrastructure/data-sources/cosmos-db/models/category";
-import { CategoryProps } from "../../../contexts/listing/category";
+import { Category as CategoryDO, CategoryProps } from "../../../contexts/listing/category";
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
+
+import { MongoTypeConverter } from "../mongo-type-converter";
+
+export class CategoryConverter extends MongoTypeConverter<Category,CategoryDomainAdapter,CategoryDO<CategoryDomainAdapter>> {
+  constructor() {
+    super(CategoryDomainAdapter, CategoryDO);
+  }
+}
 
 export class CategoryDomainAdapter extends MongooseDomainAdapater<Category> implements CategoryProps {
   constructor(props: Category) { super(props); }

@@ -9,7 +9,7 @@ export class MongoCategoryRepository<PropType extends CategoryProps> extends Mon
   constructor(
     eventBus: EventBus,
     modelType: typeof CategoryModel, 
-    typeConverter: TypeConverter<Category, CategoryDO<PropType>>,
+    typeConverter: TypeConverter<Category, CategoryDO<PropType>,PropType>,
     session: ClientSession
   ) {
     super(eventBus,modelType,typeConverter,session);

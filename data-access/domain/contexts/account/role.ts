@@ -9,12 +9,20 @@ export interface RoleProps extends EntityProps {
   updatedAt: Date;
 }
 
-export class Role extends Entity<RoleProps> implements RoleEntityReference{
+export class Role<props extends RoleProps> extends Entity<RoleProps> implements RoleEntityReference{
+  constructor(props: props) { super(props); }
   get roleName(): string { return this.props.roleName; }
   get isDefault(): boolean { return this.props.isDefault; }
   get permissions(): PermissionsEntityReference { return this.props.permissions; }
   get createdAt(): Date { return this.props.createdAt; }
   get updatedAt(): Date { return this.props.updatedAt; }  
+
+  public static create(props: RoleProps, roleName:string,isDefault:boolean): Role<RoleProps> {
+    var role = new Role(props);
+    role.props.roleName = roleName;
+    role.props.isDefault = isDefault;
+    return role
+  }
 }
 
 export interface RoleEntityReference extends Readonly<EntityProps>{

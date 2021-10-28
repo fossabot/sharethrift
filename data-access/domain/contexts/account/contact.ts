@@ -1,12 +1,13 @@
 import { Entity, EntityProps } from '../../shared/entity';
-import { UserEntityReference } from '../user/user';
+import { User, UserEntityReference, UserProps } from '../user/user';
 import { RoleEntityReference, RoleProps} from './role';
 
 export interface ContactProps extends EntityProps {
   firstName: string;
   lastName: string;
   role: RoleProps;
-  user: UserEntityReference;
+  readonly user: UserEntityReference;
+  addUser<props extends UserProps>(user: User<props>):void
   createdAt: Date;
   updatedAt: Date;
 }

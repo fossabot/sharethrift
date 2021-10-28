@@ -1,8 +1,9 @@
 import { UserCreatedEvent } from '../../events/user-created';
 import { AggregateRoot } from '../../shared/aggregate-root';
+import { EntityProps } from '../../shared/entity';
 
-export interface UserProps {
-  id:string;
+export interface UserProps extends EntityProps {
+  externalId:string;
   firstName: string;
   lastName: string;
   email: string;
@@ -10,6 +11,8 @@ export interface UserProps {
   updatedAt: Date;
   schemaVersion: string;
 }
+
+
 export class User<props extends UserProps> extends AggregateRoot<props> implements UserEntityReference  {
   constructor(props: props) { super(props); }
 
@@ -20,9 +23,21 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
   get updatedAt(): Date {return this.props.updatedAt;}
   get createdAt(): Date {return this.props.createdAt;}
   get schemaVersion(): string {return this.props.schemaVersion;}
-  public MarkAsNew(): void {
+
+  private MarkAsNew(): void {
     this.addIntegrationEvent(UserCreatedEvent,{userId: this.props.id});
   }
+
+  public static getNewUser<props extends UserProps> (newprops:props,externalId:string,firstName:string,lastName:string,email:string): User<props> {
+    newprops.externalId = externalId;
+    newprops.firstName = firstName;
+    newprops.lastName = lastName;
+    newprops.email = email;
+    var user = new User(newprops);
+    user.MarkAsNew();
+    return user;
+  }
+
 }
 
 export interface UserEntityReference {
