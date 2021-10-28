@@ -9,7 +9,7 @@ export default () => { NodeEventBus.register(UserCreatedEvent, async (payload) =
   await AccountUnitOfWork.withTransaction(async (repo) => {
     var accounts = await repo.getByUserId(payload.userId);
     if(!accounts || accounts.length == 0) {
-      var newAccount = repo.getNewInstance(payload.userId);
+      var newAccount = await repo.getNewInstance(payload.userId);
       await repo.save(newAccount);
     }
   });

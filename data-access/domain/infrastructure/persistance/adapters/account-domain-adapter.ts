@@ -1,13 +1,20 @@
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
-import { Account, Contact, Role, AccountPermissions, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
-import { AccountProps } from "../../../contexts/account/account";
+import { Account, Contact,  AccountPermissions, Role, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
+import { Account as AccountDO, AccountProps } from "../../../contexts/account/account";
 import { RoleProps } from "../../../contexts/account/role";
 import { ContactProps } from "../../../contexts/account/contact";
 import { PermissionsProps } from "../../../contexts/account/permissions";
 import { ListingPermissionsProps } from "../../../contexts/account/listing-permissions";
 import { AccountPermissionsProps } from "../../../contexts/account/account-permissions";
 import { UserDomainAdapter } from "./user-domain-adapter";
-import { User, UserEntityReference } from "../../../contexts/user/user";
+import { User, UserEntityReference, UserProps } from "../../../contexts/user/user";
+
+import { MongoTypeConverter } from "../mongo-type-converter";
+export class AccountConverter extends MongoTypeConverter<Account,AccountDomainAdapter,AccountDO<AccountDomainAdapter>> {
+  constructor() {
+    super(AccountDomainAdapter, AccountDO);
+  }
+}
 
 class AccountPermissionsAdapter implements AccountPermissionsProps  {
   constructor(public readonly props: AccountPermissions) { }
@@ -40,7 +47,6 @@ class RoleAdapter implements RoleProps{
   public get isDefault(): boolean { return this.props.isDefault; }
   public set isDefault(value: boolean) { this.props.isDefault = value; }
   public get permissions(): PermissionsProps { return new PermissionsAdapter(this.props.permissions); }
-//  public set permissions(value: PermissionsProps) { this.props.permissions = value; }
   public get createdAt(): Date { return this.props.createdAt; }
   public set createdAt(value: Date) { this.props.createdAt = value; }
   public get updatedAt(): Date { return this.props.updatedAt; }
@@ -55,7 +61,11 @@ class ContactDomainAdapter implements ContactProps{
   public get lastName(): string { return this.props.lastName; }
   public set lastName(value: string) { this.props.lastName = value; }
   public get role(): RoleProps {  return this.props.role ? new RoleAdapter(this.props.role) : undefined; }
+ 
   public get user(): UserEntityReference { return this.props.user ? new User(new UserDomainAdapter(this.props.user)) : undefined;}
+  addUser<props extends UserProps>(user: User<props>): void {
+    this.props.user.set(user.props);
+  }
   public get createdAt(): Date { return this.props.createdAt; }
   public set createdAt(value: Date) { this.props.createdAt = value; }
   public get updatedAt(): Date { return this.props.updatedAt; }

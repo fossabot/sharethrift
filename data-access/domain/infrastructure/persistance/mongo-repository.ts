@@ -11,7 +11,7 @@ export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps
   constructor(
     protected eventBus: EventBus,
     protected model : Model<MongoType>, 
-    protected typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    protected typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>, 
     protected session:ClientSession) {}
   
   async get(id: string): Promise<DomainType> {
@@ -41,9 +41,9 @@ export abstract class MongoRepositoryBase<MongoType,PropType extends EntityProps
   static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
-    typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>, 
     session:ClientSession,
-    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) =>RepoType ): RepoType {
+    repoClass: new(bus:EventBus,model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>,session:ClientSession) =>RepoType ): RepoType {
       return new repoClass(bus,model,typeConverter,session);
   }
 }
@@ -52,9 +52,9 @@ export class MongoFactory{
   static create<MongoType,PropType extends EntityProps, DomainType extends AggregateRoot<PropType>, RepoType extends MongoRepositoryBase<MongoType,PropType,DomainType>>(
     bus: EventBus,
     model: Model<MongoType>, 
-    typeConverter:TypeConverter<Document<MongoType>,DomainType>, 
+    typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>, 
     session:ClientSession,
-    repoClass: new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) =>RepoType ): RepoType {
+    repoClass: new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>,session:ClientSession) =>RepoType ): RepoType {
       return new repoClass(bus,model,typeConverter,session);
   }
 }

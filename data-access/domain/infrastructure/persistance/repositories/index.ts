@@ -3,19 +3,19 @@ import { InProcEventBus } from '../../events/in-proc-event-bus';
 import { MongoUnitOfWork } from '../mongo-unit-of-work';
 
 import { AccountModel } from '../../../../infrastructure/data-sources/cosmos-db/models/account';
-import { AccountConverter } from './mongo-account-converter';
+import { AccountConverter } from '../adapters/account-domain-adapter';
 import { MongoAccountRepository } from './mongo-account-repository';
 
 import { CategoryModel } from '../../../../infrastructure/data-sources/cosmos-db/models/category';
-import { CategoryConverter } from './mongo-category-converter';
+import { CategoryConverter } from '../adapters/category-domain-adapter';
 import { MongoCategoryRepository } from './mongo-category-repository';
 
 import { ListingModel } from '../../../../infrastructure/data-sources/cosmos-db/models/listing';
-import { ListingConverter } from './mongo-listing-converter';
+import { ListingConverter } from '../adapters/listing-domain-adapter';
 import { MongoListingRepository } from './mongo-listing-repository';
 
 import { UserModel } from '../../../../infrastructure/data-sources/cosmos-db/models/user';
-import { UserConverter } from './mongo-user-converter';
+import { UserConverter } from '../adapters/user-domain-adapter';
 import { MongoUserRepository } from './mongo-user-repository';
 
 export const CategoryUnitOfWork = new MongoUnitOfWork(InProcEventBus,NodeEventBus, CategoryModel, new CategoryConverter(), MongoCategoryRepository);

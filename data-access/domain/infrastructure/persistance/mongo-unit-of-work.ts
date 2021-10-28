@@ -30,8 +30,8 @@ export class MongoUnitOfWork<MongoType,PropType extends EntityProps, DomainType 
       private bus : EventBus,
       private integrationEventBus: EventBus,
       private model : Model<MongoType>, 
-      private typeConverter : TypeConverter<Document<MongoType>,DomainType>,
-      private repoClass : {new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType>,session:ClientSession) : RepoType}
+      private typeConverter : TypeConverter<Document<MongoType>,DomainType,PropType>,
+      private repoClass : {new(bus:EventBus, model:Model<MongoType>,typeConverter:TypeConverter<Document<MongoType>,DomainType,PropType>,session:ClientSession) : RepoType}
     ){
       super();
     }

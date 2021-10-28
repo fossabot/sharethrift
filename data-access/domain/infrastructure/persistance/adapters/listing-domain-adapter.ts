@@ -1,4 +1,4 @@
-import { ListingProps } from "../../../contexts/listing/listing";
+import { Listing as ListingDO, ListingProps } from "../../../contexts/listing/listing";
 import { Listing ,ListingModel} from "../../../../infrastructure/data-sources/cosmos-db/models/listing";
 import { Account } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
 import { LocationProps } from "../../../contexts/listing/location";
@@ -12,6 +12,14 @@ import { PhotoDomainAdapter } from "./photo-domain-adapter";
 import { CategoryDomainAdapter } from "./category-domain-adapter";
 import { LocationDomainAdapter } from "./location-domain-adapter";
 import { AccountDomainAdapter } from "./account-domain-adapter";
+
+import { MongoTypeConverter } from "../mongo-type-converter";
+
+export class ListingConverter extends MongoTypeConverter<Listing,ListingDomainAdapter,ListingDO<ListingDomainAdapter>> {
+  constructor() {
+    super(ListingDomainAdapter, ListingDO);
+  }
+}
 
 export class ListingDomainAdapter extends MongooseDomainAdapater<Listing> implements ListingProps {
   constructor(props: Listing) { super(props); }
