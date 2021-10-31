@@ -25,7 +25,7 @@ export default class Listings extends DomainDataSource<Context,Listing,PropType,
   async addListing(listing: ListingDetail) : Promise<ListingEntityReference> {
     //If there are conversions between GraphQL Types and domain types, it should happen here
     
-    var userExternalId = this.context.VerifedUser.VerifiedJWT.oid;
+    var userExternalId = this.context.VerifiedUser.VerifiedJWT.oid;
     var user =  await UserModel.findOne({externalId: userExternalId}).exec();
 
     

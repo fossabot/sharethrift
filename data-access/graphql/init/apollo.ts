@@ -1,7 +1,7 @@
 import { ApolloServer, CreateHandlerOptions, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
 import { CosmosDB } from '../data-sources/cosmos-db';
-import connect from '../../infrastructure/data-sources/cosmos-db/connect';
+import { connect } from '../../infrastructure/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
 import mongoose from 'mongoose';

@@ -11,7 +11,7 @@ export default class Users extends MongoDataSource<User.User, Context> {
   }
 
   async getUsers(): Promise<UserEntityReference[]> {
-    console.log(`getUsers:jwt:userid${JSON.stringify(this.context.VerifedUser.VerifiedJWT.sub)}`);
+    console.log(`getUsers:jwt:userid${JSON.stringify(this.context.VerifiedUser.VerifiedJWT.sub)}`);
     return (await this.model
       .find({})
       .exec())

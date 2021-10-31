@@ -1,7 +1,7 @@
 import { MongooseDomainAdapater } from "../mongo-domain-adapter";
 import { Account, Contact, AccountPermissions, Role, ListingPermissions, Permissions } from "../../../../infrastructure/data-sources/cosmos-db/models/account";
 import { Account as AccountDO, AccountProps } from "../../../contexts/account/account";
-import { RoleDO, RoleProps } from "../../../contexts/account/role";
+import { Role as RoleDO, RoleProps } from "../../../contexts/account/role";
 import { Contact as ContactDO, ContactProps } from "../../../contexts/account/contact";
 import { PermissionsProps } from "../../../contexts/account/permissions";
 import { ListingPermissionsProps } from "../../../contexts/account/listing-permissions";
@@ -63,7 +63,7 @@ class ContactDomainAdapter implements ContactProps{
   public set lastName(value: string) { this.props.lastName = value; }
   public get role(): RoleProps {  return this.props.role ? new RoleAdapter(this.props.role) : undefined; }
   public addRole<props extends RoleProps>(role: RoleDO<props>): void {
-    this.props.role = role.props.props.id;
+    this.props.set('role',role.props.id);
   }
   public get user(): UserEntityReference { return this.props.user ? new User(new UserDomainAdapter(this.props.user)) : undefined;}
   public addUser<props extends UserProps>(user: User<props>): void {

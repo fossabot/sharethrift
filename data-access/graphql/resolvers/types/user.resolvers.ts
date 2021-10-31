@@ -5,8 +5,8 @@ import { CacheScope } from 'apollo-server-types';
 const user : Resolvers = {
   Query: {      
     user : async (parent, args, context, info)  => {
-      if(context.VerifedUser){
-        console.log(`user found in context with JWT: ${JSON.stringify(context.VerifedUser.VerifiedJWT)}`)
+      if(context.VerifiedUser){
+        console.log(`user found in context with JWT: ${JSON.stringify(context.VerifiedUser.VerifiedJWT)}`)
       }
     //  info.cacheControl.setCacheHint({ maxAge: 60,scope: CacheScope.Public });
       console.log(`Resolver>Query>user ${args.id}`)

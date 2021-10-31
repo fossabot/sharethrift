@@ -21,14 +21,14 @@ export default class Users extends DomainDataSource<Context,User,PropType,Domain
     return result;
   }
   async addUser() : Promise<UserEntityReference> {
-    if(this.context.VerifedUser.OpenIdConfigKey !== 'AccountPortal') {
+    if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
       throw new Error('Unauthorized');
     }
     
-    var userExternalId = this.context.VerifedUser.VerifiedJWT.sub;
-    var userFirstName = this.context.VerifedUser.VerifiedJWT.given_name;
-    var userLastName = this.context.VerifedUser.VerifiedJWT.family_name;
-    var userEmail = this.context.VerifedUser.VerifiedJWT.email;
+    var userExternalId = this.context.VerifiedUser.VerifiedJWT.sub;
+    var userFirstName = this.context.VerifiedUser.VerifiedJWT.given_name;
+    var userLastName = this.context.VerifiedUser.VerifiedJWT.family_name;
+    var userEmail = this.context.VerifiedUser.VerifiedJWT.email;
 
     var userToReturn : UserEntityReference;
     await this.withTransaction(async (repo) => {
