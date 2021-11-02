@@ -12,6 +12,7 @@ export default () => { NodeEventBus.register(UserCreatedEvent, async (payload) =
       var newAccount = await repo.getNewInstance(payload.userId);
       console.log(`UserCreatedEvent -> CreateAccount Handler - Creating new Account: ${JSON.stringify(newAccount)}`);
       await repo.save(newAccount);
+      console.log(`UserCreatedEvent -> CreateAccount Handler - Created new Account: ${JSON.stringify(newAccount)}`);
     }
   });
 

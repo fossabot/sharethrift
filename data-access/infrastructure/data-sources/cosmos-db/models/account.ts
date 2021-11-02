@@ -1,4 +1,5 @@
-import mongoose, { Schema, model, Model, ObjectId, Document } from 'mongoose';
+import mongoose, { Schema, model, Model, ObjectId, Document,PopulatedDoc } from 'mongoose';
+
 import { Base, BaseOptions } from './interfaces/base';
 import * as User from "./user";
 
@@ -30,7 +31,8 @@ export interface Contact extends Document {
   firstName:string;
   lastName?:string;
   role?:Role;
-  user:User.User;
+
+  user:PopulatedDoc<User.User> | ObjectId;
   createdAt:Date;
   updatedAt:Date;
 }
