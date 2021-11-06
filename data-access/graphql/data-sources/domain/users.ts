@@ -1,7 +1,7 @@
-import { User as UserDO, UserEntityReference } from '../../../domain/contexts/user/user';
-import {UserDomainAdapter}from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
+import { User as UserDO } from '../../../domain/contexts/user/user';
+import { UserConverter, UserDomainAdapter }from '../../../domain/infrastructure/persistance/adapters/user-domain-adapter';
 import { MongoUserRepository } from '../../../domain/infrastructure/persistance/repositories/mongo-user-repository';
-import {Context} from '../../context';
+import { Context } from '../../context';
 import { UserUpdateInput } from '../../generated';
 import { DomainDataSource } from './domain-data-source';
 import { User } from '../../../infrastructure/data-sources/cosmos-db/models/user';
@@ -10,17 +10,24 @@ type PropType = UserDomainAdapter;
 type DomainType = UserDO<PropType>;
 type RepoType = MongoUserRepository<PropType>;
 
-export default class Users extends DomainDataSource<Context,User,PropType,DomainType,RepoType> {
-  async updateUser(user: UserUpdateInput) : Promise<UserEntityReference> {
-    var result : UserEntityReference;
+export class Users extends DomainDataSource<Context,User,PropType,DomainType,RepoType> {
+  async updateUser(user: UserUpdateInput) : Promise<User> {
+    if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
+      throw new Error('Unauthorized');
+    }
+
+    var result : User;
     await this.withTransaction(async (repo) => {
       let domainObject = await repo.get(user.id);
-      //.(user.description);
-      result = await repo.save(domainObject);
+      if(!domainObject || domainObject.externalId !== this.context.VerifiedUser.VerifiedJWT.sub) {
+        throw new Error('Unauthorized');
+      }
+      domainObject.setFirstName(user.firstName);
+      result = (new UserConverter()).toMongo(await repo.save(domainObject));
     });
     return result;
   }
-  async addUser() : Promise<UserEntityReference> {
+  async addUser() : Promise<User> {
     if(this.context.VerifiedUser.OpenIdConfigKey !== 'AccountPortal') {
       throw new Error('Unauthorized');
     }
@@ -30,11 +37,12 @@ export default class Users extends DomainDataSource<Context,User,PropType,Domain
     var userLastName = this.context.VerifiedUser.VerifiedJWT.family_name;
     var userEmail = this.context.VerifiedUser.VerifiedJWT.email;
 
-    var userToReturn : UserEntityReference;
+    var userToReturn : User;
     await this.withTransaction(async (repo) => {
+      var userConverter = new UserConverter();
       let userExists = await repo.getByExternalId(userExternalId);
       if(userExists) {
-        userToReturn = userExists;
+        userToReturn = userConverter.toMongo(userExists);
       }else{
         var newUser = repo.getNewInstance(
           userExternalId,
@@ -42,11 +50,8 @@ export default class Users extends DomainDataSource<Context,User,PropType,Domain
           userLastName,
           userEmail
         );
-        console.log(`New user - presave: ${JSON.stringify(newUser)}}`);
-        userToReturn = await repo.save(newUser);
+        userToReturn = userConverter.toMongo(await repo.save(newUser));
       }
-
-
     });
     return userToReturn;
   }

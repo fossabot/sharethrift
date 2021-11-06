@@ -12,11 +12,11 @@ export interface UserProps extends EntityProps {
   schemaVersion: string;
 }
 
-
 export class User<props extends UserProps> extends AggregateRoot<props> implements UserEntityReference  {
   constructor(props: props) { super(props); }
 
   get id(): string {return this.props.id;}
+  get externalId(): string {return this.props.externalId;}
   get firstName(): string {return this.props.firstName;}
   get lastName(): string {return this.props.lastName;}
   get email(): string {return this.props.email;}
@@ -30,18 +30,31 @@ export class User<props extends UserProps> extends AggregateRoot<props> implemen
 
   public static getNewUser<props extends UserProps> (newprops:props,externalId:string,firstName:string,lastName:string,email:string): User<props> {
     newprops.externalId = externalId;
-    newprops.firstName = firstName;
     newprops.lastName = lastName;
     newprops.email = email;
     var user = new User(newprops);
+    user.setFirstName(firstName);
     user.MarkAsNew();
     return user;
+  }
+
+  public setFirstName(firstName:string): void {
+    if(!this.props.firstName || this.props.firstName.length == 0) {
+      throw new Error("First name is required");
+    }
+    if(this.props.firstName.length > 150){
+      throw new Error("First name is too long");
+    }
+    if(this.props.firstName != firstName) {
+      this.props.firstName = firstName;
+    }
   }
 
 }
 
 export interface UserEntityReference {
   readonly id: string;
+  readonly externalId: string;
   readonly firstName: string;
   readonly lastName: string;
   readonly email: string;

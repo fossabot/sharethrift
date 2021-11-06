@@ -30,7 +30,7 @@ export class Account<props extends AccountProps> extends AggregateRoot<props> im
   get schemaVersion(): string {return this.props.schemaVersion;}
   public async contacts(): Promise<ContactEntityReference[]>  {return (await this.props.contacts()).map(contact => new Contact(contact));}
 
-  static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(newUser:User<userProps>, props:newPropType): Promise<Account<newPropType>> {
+  static async CreateInitialAccountForNewUser<newPropType extends AccountProps, userProps extends UserProps>(props:newPropType,newUser:User<userProps>): Promise<Account<newPropType>> {
     props.name = newUser.id;
     var account = new Account(props);
 

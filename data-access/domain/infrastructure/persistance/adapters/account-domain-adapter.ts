@@ -95,9 +95,9 @@ export class AccountDomainAdapter extends MongooseDomainAdapater<Account> implem
       this.props.contacts = new mongoose.Types.DocumentArray<Contact>([]);
     }
     
-    var newContact = (new mongoose.Types.DocumentArray<Contact>([{_id: new mongoose.Types.ObjectId()}])).shift();
-    return new ContactDomainAdapter(newContact);
-    //return new ContactDomainAdapter(this.props.contacts.create({_id: new mongoose.Types.ObjectId()}));
+    //var newContact = (new mongoose.Types.DocumentArray<Contact>([{_id: new mongoose.Types.ObjectId()}])).shift();
+    //return new ContactDomainAdapter(newContact);
+    return new ContactDomainAdapter(this.props.contacts.create({_id: new mongoose.Types.ObjectId()}));
   }
   public addContact<props extends ContactProps>(contact: ContactDO<props>): void {
     this.props.contacts.push(contact.props);
@@ -110,9 +110,9 @@ export class AccountDomainAdapter extends MongooseDomainAdapater<Account> implem
     if(!this.props.roles) {
       this.props.roles = new mongoose.Types.DocumentArray<Role>([]);
     }
-    var newRole = (new mongoose.Types.DocumentArray<Role>([{_id: new mongoose.Types.ObjectId()}])).shift();
-    return new RoleAdapter(newRole);
-    //return new RoleAdapter(this.props.roles.create({_id: new mongoose.Types.ObjectId()}));
+    //var newRole = (new mongoose.Types.DocumentArray<Role>([{_id: new mongoose.Types.ObjectId()}])).shift();
+    //return new RoleAdapter(newRole);
+    return new RoleAdapter(this.props.roles.create({_id: new mongoose.Types.ObjectId()}));
   }
   addRole<props extends RoleProps>(role: RoleDO<props>): void {
     this.props.roles.push(role.props);

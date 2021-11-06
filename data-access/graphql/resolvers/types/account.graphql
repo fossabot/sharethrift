@@ -9,6 +9,10 @@ type Account implements MongoBase {
   createdAt: DateTime
 }
 
+extend type Query {
+  accounts: [Account]
+}
+
 type Role {
   roleName: String!
   isDefault: Boolean!

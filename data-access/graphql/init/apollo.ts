@@ -10,6 +10,7 @@ import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
 import { Domain } from '../data-sources/domain';
 import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
+import { Context as ApolloContext } from '../context';
 
 
 
@@ -29,15 +30,18 @@ const serverConfig = () => {
     }),
     context: async (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
-     
+      var context:Partial<ApolloContext> ={};
+      
       if(bearerToken){
         var verifiedUser = await portalTokenExtractor.GetVerifiedUser(bearerToken);
+        console.log('Decorating context with verifed user:',JSON.stringify(verifiedUser));
         if(verifiedUser){
-          return {
-            VerifedUser:verifiedUser
-          }
+         
+          context.VerifiedUser = verifiedUser
+          console.log('context value is now:', JSON.stringify(context));
         }
       }
+      return context;
     },
     playground: { endpoint: "/api/graphql" },
     healthCheckPath: "/api/graphql/healthcheck",
