@@ -1,6 +1,6 @@
 import { ApolloServer, CreateHandlerOptions, gql } from 'apollo-server-azure-functions';
 import { HttpRequest, Context } from "@azure/functions";
-import { CosmosDB } from '../data-sources/cosmos-db';
+import { DataSources } from '../data-sources/';
 import { connect } from '../../infrastructure/data-sources/cosmos-db/connect';
 import { GraphQLServiceContext } from 'apollo-server-types';
 import responseCachePlugin from 'apollo-server-plugin-response-cache';
@@ -8,12 +8,8 @@ import mongoose from 'mongoose';
 import { PortalTokenValidation } from './extensions/portal-token-validation';
 import { combinedSchema } from './extensions/schema-builder';
 import * as util  from './extensions/util';
-import { Domain } from '../data-sources/domain';
 import RegisterHandlers from '../../domain/infrastructure/event-handlers/index'
 import { Context as ApolloContext } from '../context';
-
-
-
 
 let Portals = new Map<string,string>([
   ["AccountPortal","ACCOUNT_PORTAL"]
@@ -25,8 +21,7 @@ const serverConfig = () => {
   return {
     schema:combinedSchema,
     dataSources: () => ({
-      ...CosmosDB,
-      ...Domain
+      ...DataSources
     }),
     context: async (req:any) => {
       let bearerToken = util.ExtractBearerToken(req.request);
@@ -36,7 +31,6 @@ const serverConfig = () => {
         var verifiedUser = await portalTokenExtractor.GetVerifiedUser(bearerToken);
         console.log('Decorating context with verifed user:',JSON.stringify(verifiedUser));
         if(verifiedUser){
-         
           context.VerifiedUser = verifiedUser
           console.log('context value is now:', JSON.stringify(context));
         }
